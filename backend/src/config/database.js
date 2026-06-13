@@ -2,6 +2,7 @@ import Database from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
 import crypto from 'crypto';
+import bcrypt from 'bcryptjs';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -20,12 +21,10 @@ if (tableCount === 0) {
 
   const userCount = db.prepare('SELECT COUNT(*) as c FROM usuarios').get().c;
   if (userCount === 0) {
-    import('bcryptjs').then(bcrypt => {
-      const hash = bcrypt.hashSync('admin123', 10);
-      const id = crypto.randomUUID();
-      db.prepare('INSERT INTO usuarios (id, email, password_hash, rol, activo) VALUES (?, ?, ?, ?, 1)').run('admin-' + id, 'admin@iglesia.com', hash, 'administrador');
-      console.log('Usuario admin creado: admin@iglesia.com / admin123');
-    });
+    const hash = bcrypt.hashSync('admin123', 10);
+    const id = crypto.randomUUID();
+    db.prepare('INSERT INTO usuarios (id, email, password_hash, rol, activo) VALUES (?, ?, ?, ?, 1)').run('admin-' + id, 'admin@iglesia.com', hash, 'administrador');
+    console.log('Usuario admin creado: admin@iglesia.com / admin123');
   }
   console.log('Base de datos inicializada');
 }
