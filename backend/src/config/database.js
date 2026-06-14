@@ -22,9 +22,11 @@ if (tableCount === 0) {
   const userCount = db.prepare('SELECT COUNT(*) as c FROM usuarios').get().c;
   if (userCount === 0) {
     const hash = bcrypt.hashSync('admin123', 10);
-    const id = crypto.randomUUID();
-    db.prepare('INSERT INTO usuarios (id, email, password_hash, rol, activo) VALUES (?, ?, ?, ?, 1)').run('admin-' + id, 'admin@iglesia.com', hash, 'administrador');
-    console.log('Usuario admin creado: admin@iglesia.com / admin123');
+    const id1 = crypto.randomUUID();
+    db.prepare('INSERT INTO usuarios (id, email, password_hash, rol, activo) VALUES (?, ?, ?, ?, 1)').run('admin-' + id1, 'admin@iglesia.com', hash, 'administrador');
+    const id2 = crypto.randomUUID();
+    db.prepare('INSERT INTO usuarios (id, email, password_hash, rol, activo) VALUES (?, ?, ?, ?, 1)').run('anthony-' + id2, 'anthony@iglesia.com', hash, 'administrador');
+    console.log('Usuarios creados: admin@iglesia.com / anthony@iglesia.com (password: admin123)');
   }
   console.log('Base de datos inicializada');
 }

@@ -72,7 +72,7 @@ export function generateTreasuryReportPDF(data) {
       // Draw concept lines
       doc.fontSize(10).font('Helvetica');
       let y = doc.y;
-      const lineHeight = 22;
+      const lineHeight = 26;
 
       concepts.forEach(c => {
         const amount = data.concepts[c.key] || 0;
@@ -81,8 +81,8 @@ export function generateTreasuryReportPDF(data) {
         doc.font('Helvetica').text(c.label, leftX, y, { width: pageWidth - 80, align: 'left' });
         doc.font('Helvetica-Bold').text(formatted, leftX + pageWidth - 70, y, { width: 70, align: 'right' });
 
-        // Underline
-        doc.moveTo(leftX, y + 14).lineTo(rightX, y + 14).strokeColor('#cccccc').stroke();
+        // Separator line
+        doc.moveTo(leftX, y + 18).lineTo(rightX, y + 18).strokeColor('#cccccc').stroke();
         doc.strokeColor('#000000');
 
         y += lineHeight;
@@ -172,6 +172,11 @@ export function generateTreasuryReportPDF(data) {
       // Data rows
       doc.fontSize(7).font('Helvetica');
       (data.contributions || []).forEach((row, i) => {
+        if (tableY + 14 > doc.page.height - 40) {
+          doc.addPage();
+          doc.fontSize(7).font('Helvetica');
+          tableY = 30;
+        }
         x = tableLeft;
         const rowH = 14;
         const bg = i % 2 === 0 ? '#f2f2f2' : '#ffffff';
