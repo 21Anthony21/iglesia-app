@@ -12,7 +12,8 @@ const router = Router();
 router.use(authenticate);
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const dbPath = path.join(__dirname, '..', '..', 'data', 'iglesia.db');
+const dataDir = process.env.DATA_DIR || path.join(__dirname, '..', '..', 'data');
+const dbPath = path.join(dataDir, 'iglesia.db');
 
 function withIgnoreConstraint(fn) {
   const db = new Database(dbPath);
