@@ -18,6 +18,9 @@ export default function Attendance() {
   const [memberDetail, setMemberDetail] = useState(null);
   const [showCreateService, setShowCreateService] = useState(false);
   const [showRegisterAttendance, setShowRegisterAttendance] = useState(null);
+  const [showMemberForm, setShowMemberForm] = useState(false);
+  const [editMemberId, setEditMemberId] = useState(null);
+  const [memberForm, setMemberForm] = useState({ nombre: '', apellido: '', cedula: '', pasaporte: '', fecha_nacimiento: '', direccion: '', telefono: '', telefono_alternativo: '', email: '', estado_civil: '', ocupacion: '', fecha_conversion: '', fecha_membresia: '', notas: '' });
   const [serviceForm, setServiceForm] = useState({ tipo: 'culto_domingo', fecha: new Date().toISOString().split('T')[0], hora: '19:00', titulo: '', predicador: '' });
   const [members, setMembers] = useState([]);
   const [attendanceMap, setAttendanceMap] = useState({});
@@ -52,6 +55,50 @@ export default function Attendance() {
     const map = {};
     (data.asistentes || []).forEach(a => { map[a.miembro_id] = a.estado; });
     setAttendanceMap(map);
+  };
+
+  const openMemberForm = (member = null) => {
+    if (member) {
+      setMemberForm({
+        nombre: member.nombre || '',
+        apellido: member.apellido || '',
+        cedula: member.cedula || '',
+        pasaporte: member.pasaporte || '',
+        fecha_nacimiento: member.fecha_nacimiento ? member.fecha_nacimiento.split('T')[0] : '',
+        direccion: member.direccion || '',
+        telefono: member.telefono || '',
+        telefono_alternativo: member.telefono_alternativo || '',
+        email: member.email || '',
+        estado_civil: member.estado_civil || '',
+        ocupacion: member.ocupacion || '',
+        fecha_conversion: member.fecha_conversion ? member.fecha_conversion.split('T')[0] : '',
+        fecha_membresia: member.fecha_membresia ? member.fecha_membresia.split('T')[0] : '',
+        notas: member.notas || '',
+      });
+      setEditMemberId(member.id);
+    } else {
+      setMemberForm({ nombre: '', apellido: '', cedula: '', pasaporte: '', fecha_nacimiento: '', direccion: '', telefono: '', telefono_alternativo: '', email: '', estado_civil: '', ocupacion: '', fecha_conversion: '', fecha_membresia: '', notas: '' });
+      setEditMemberId(null);
+    }
+    setShowMemberForm(true);
+  };
+
+  const handleMemberSubmit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      if (editMemberId) {
+        await api.put(`/members/${editMemberId}`, memberForm);
+      } else {
+        await api.post('/members', memberForm);
+      }
+      setShowMemberForm(false);
+      loadData();
+    } catch (err) {
+      alert(err.response?.data?.error || 'Error al guardar miembro');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const toggleAttendance = async (miembroId, estado, servicioId) => {
@@ -160,6 +207,67 @@ export default function Attendance() {
         </div>
       )}
 
+      {showMemberForm && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowMemberForm(false)}>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl" onClick={e => e.stopPropagation()}>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold dark:text-white">{editMemberId ? 'Editar Miembro' : 'Nuevo Miembro'}</h3>
+              <button onClick={() => setShowMemberForm(false)} className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"><X className="w-5 h-5 text-gray-500" /></button>
+            </div>
+            <form onSubmit={handleMemberSubmit} className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div><label className="block text-sm font-medium mb-1 dark:text-gray-300">Nombre *</label>
+                  <input className="input-field" value={memberForm.nombre} onChange={e => setMemberForm(f => ({ ...f, nombre: e.target.value }))} required /></div>
+                <div><label className="block text-sm font-medium mb-1 dark:text-gray-300">Apellido *</label>
+                  <input className="input-field" value={memberForm.apellido} onChange={e => setMemberForm(f => ({ ...f, apellido: e.target.value }))} required /></div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div><label className="block text-sm font-medium mb-1 dark:text-gray-300">Cédula</label>
+                  <input className="input-field" value={memberForm.cedula} onChange={e => setMemberForm(f => ({ ...f, cedula: e.target.value }))} /></div>
+                <div><label className="block text-sm font-medium mb-1 dark:text-gray-300">Pasaporte</label>
+                  <input className="input-field" value={memberForm.pasaporte} onChange={e => setMemberForm(f => ({ ...f, pasaporte: e.target.value }))} /></div>
+              </div>
+              <div><label className="block text-sm font-medium mb-1 dark:text-gray-300">Email</label>
+                <input type="email" className="input-field" value={memberForm.email} onChange={e => setMemberForm(f => ({ ...f, email: e.target.value }))} /></div>
+              <div className="grid grid-cols-2 gap-3">
+                <div><label className="block text-sm font-medium mb-1 dark:text-gray-300">Teléfono</label>
+                  <input className="input-field" value={memberForm.telefono} onChange={e => setMemberForm(f => ({ ...f, telefono: e.target.value }))} /></div>
+                <div><label className="block text-sm font-medium mb-1 dark:text-gray-300">Tel. Alternativo</label>
+                  <input className="input-field" value={memberForm.telefono_alternativo} onChange={e => setMemberForm(f => ({ ...f, telefono_alternativo: e.target.value }))} /></div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div><label className="block text-sm font-medium mb-1 dark:text-gray-300">Fecha Nacimiento</label>
+                  <input type="date" className="input-field" value={memberForm.fecha_nacimiento} onChange={e => setMemberForm(f => ({ ...f, fecha_nacimiento: e.target.value }))} /></div>
+                <div><label className="block text-sm font-medium mb-1 dark:text-gray-300">Estado Civil</label>
+                  <select className="input-field" value={memberForm.estado_civil} onChange={e => setMemberForm(f => ({ ...f, estado_civil: e.target.value }))}>
+                    <option value="">Seleccionar</option>
+                    <option value="soltero">Soltero</option>
+                    <option value="casado">Casado</option>
+                    <option value="divorciado">Divorciado</option>
+                    <option value="viudo">Viudo</option>
+                  </select></div>
+              </div>
+              <div><label className="block text-sm font-medium mb-1 dark:text-gray-300">Dirección</label>
+                <input className="input-field" value={memberForm.direccion} onChange={e => setMemberForm(f => ({ ...f, direccion: e.target.value }))} /></div>
+              <div><label className="block text-sm font-medium mb-1 dark:text-gray-300">Ocupación</label>
+                <input className="input-field" value={memberForm.ocupacion} onChange={e => setMemberForm(f => ({ ...f, ocupacion: e.target.value }))} /></div>
+              <div className="grid grid-cols-2 gap-3">
+                <div><label className="block text-sm font-medium mb-1 dark:text-gray-300">Fecha Conversión</label>
+                  <input type="date" className="input-field" value={memberForm.fecha_conversion} onChange={e => setMemberForm(f => ({ ...f, fecha_conversion: e.target.value }))} /></div>
+                <div><label className="block text-sm font-medium mb-1 dark:text-gray-300">Fecha Membresía</label>
+                  <input type="date" className="input-field" value={memberForm.fecha_membresia} onChange={e => setMemberForm(f => ({ ...f, fecha_membresia: e.target.value }))} /></div>
+              </div>
+              <div><label className="block text-sm font-medium mb-1 dark:text-gray-300">Notas</label>
+                <textarea className="input-field" rows="2" value={memberForm.notas} onChange={e => setMemberForm(f => ({ ...f, notas: e.target.value }))} /></div>
+              <div className="flex justify-end gap-2 pt-2">
+                <button type="button" onClick={() => setShowMemberForm(false)} className="btn-secondary">Cancelar</button>
+                <button type="submit" className="btn-primary" disabled={saving}>{saving ? 'Guardando...' : 'Guardar'}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-wrap gap-2">
         {[
           { id: 'servicios', label: 'Servicios', icon: Church },
@@ -216,6 +324,7 @@ export default function Attendance() {
       )}
 
       {tab === 'miembros' && (
+        <><div className="flex justify-end">{canEdit && <button onClick={() => openMemberForm()} className="btn-primary text-sm"><Plus className="w-4 h-4 inline mr-1" />Nuevo Miembro</button>}</div>
         <div className="card p-0 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -256,7 +365,7 @@ export default function Attendance() {
             </table>
           </div>
         </div>
-      )}
+      </>)}
 
       {memberDetail && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setMemberDetail(null)}>
