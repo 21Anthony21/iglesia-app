@@ -382,8 +382,8 @@ function MensualTab({ trends }) {
           <BarChart data={trends}><CartesianGrid strokeDasharray="3 3" /><XAxis dataKey="mes" /><YAxis /><Tooltip />
             <Bar dataKey="total_diezmos" name="Diezmos" fill="#3b82f6" /><Bar dataKey="total_ofrendas" name="Ofrendas" fill="#10b981" />
             <Bar dataKey="total_primicias" name="Primicias" fill="#8b5cf6" /><Bar dataKey="total_egresos" name="Egresos" fill="#ef4444" /></BarChart></ResponsiveContainer></div></div>
-      <div className="card p-0 overflow-hidden">
-        <table className="w-full"><thead><tr className="bg-gray-50 dark:bg-gray-700/50">
+      <div className="card p-0 overflow-x-auto">
+        <table className="min-w-[600px] w-full"><thead><tr className="bg-gray-50 dark:bg-gray-700/50">
           <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Mes</th>
           <th className="text-right px-4 py-3 text-xs font-medium text-gray-500 uppercase">Diezmos</th>
           <th className="text-right px-4 py-3 text-xs font-medium text-gray-500 uppercase">Ofrendas</th>
@@ -411,7 +411,7 @@ function MensualTab({ trends }) {
 function ListTab({ items, type, canAdd, openForm }) {
   return (
     <><div className="flex justify-end">{canAdd && <button onClick={() => openForm(type)} className="btn-primary text-sm"><Plus className="w-4 h-4 inline mr-1" />Nuev{type === 'diezmo' ? 'o' : 'a'} {type === 'diezmo' ? 'Diezmo' : 'Ofrenda'}</button>}</div>
-    <div className="card p-0 overflow-hidden"><table className="w-full"><thead><tr className="bg-gray-50 dark:bg-gray-700/50">
+    <div className="card p-0 overflow-x-auto"><table className="w-full"><thead><tr className="bg-gray-50 dark:bg-gray-700/50">
       <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Fecha</th>
       {type === 'diezmo' && <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Miembro</th>}
       {type === 'ofrenda' && <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Tipo</th>}
@@ -436,7 +436,7 @@ function ListTab({ items, type, canAdd, openForm }) {
 function ListPrimicias({ items, canAdd, openForm }) {
   return (
     <><div className="flex justify-end">{canAdd && <button onClick={() => openForm('primicia')} className="btn-primary text-sm"><Plus className="w-4 h-4 inline mr-1" />Nueva Primicia</button>}</div>
-    <div className="card p-0 overflow-hidden"><table className="w-full"><thead><tr className="bg-gray-50 dark:bg-gray-700/50">
+    <div className="card p-0 overflow-x-auto"><table className="w-full"><thead><tr className="bg-gray-50 dark:bg-gray-700/50">
       <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Fecha</th>
       <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Miembro</th>
       <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Período</th>
@@ -455,7 +455,7 @@ function ListPrimicias({ items, canAdd, openForm }) {
 function EgresosTab({ items, canAdd, openForm }) {
   return (
     <><div className="flex justify-end">{canAdd && <button onClick={() => openForm('egreso')} className="btn-primary text-sm"><Plus className="w-4 h-4 inline mr-1" />Nuevo Egreso</button>}</div>
-    <div className="card p-0 overflow-hidden"><table className="w-full"><thead><tr className="bg-gray-50 dark:bg-gray-700/50">
+    <div className="card p-0 overflow-x-auto"><table className="w-full"><thead><tr className="bg-gray-50 dark:bg-gray-700/50">
       <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Fecha</th>
       <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Categoría</th>
       <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Descripción</th>

@@ -58,20 +58,20 @@ function LoginPage() {
 }
 
 function Layout({ children }) {
+  const [open, setOpen] = useState(false);
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <Sidebar />
+      <Sidebar open={open} onClose={() => setOpen(false)} />
       <div className="lg:pl-64">
-        <TopBar />
+        <TopBar onToggleMenu={() => setOpen(true)} />
         <main className="p-4 lg:p-6">{children}</main>
       </div>
     </div>
   );
 }
 
-function Sidebar() {
+function Sidebar({ open, onClose }) {
   const { user, logout } = useAuth();
-  const [open, setOpen] = useState(false);
   const links = [
     { to: '/', label: 'Dashboard', icon: '📊', tab: 'resumen' },
     { to: '/finanzas', label: 'Finanzas', icon: '💰' },
@@ -84,7 +84,7 @@ function Sidebar() {
   ];
   return (
     <>
-      <div className={`fixed inset-0 bg-black/50 z-40 lg:hidden ${open ? 'block' : 'hidden'}`} onClick={() => setOpen(false)} />
+      <div className={`fixed inset-0 bg-black/50 z-40 lg:hidden ${open ? 'block' : 'hidden'}`} onClick={onClose} />
       <aside className={`fixed top-0 left-0 z-50 h-full w-64 bg-white dark:bg-gray-800 shadow-lg transform transition-transform lg:translate-x-0 ${open ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-4 border-b dark:border-gray-700">
           <h2 className="font-bold text-lg dark:text-white">Iglesia Puerta Del Cielo</h2>
@@ -106,10 +106,15 @@ function Sidebar() {
   );
 }
 
-function TopBar() {
+function TopBar({ onToggleMenu }) {
   return (
     <header className="bg-white dark:bg-gray-800 shadow-sm px-4 py-3 lg:px-6 flex items-center justify-between">
-      <h1 className="font-semibold text-lg dark:text-white">Iglesia Puerta Del Cielo</h1>
+      <div className="flex items-center gap-3">
+        <button onClick={onToggleMenu} className="lg:hidden p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg" aria-label="Menú">
+          <svg className="w-6 h-6 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
+        </button>
+        <h1 className="font-semibold text-lg dark:text-white">Iglesia Puerta Del Cielo</h1>
+      </div>
     </header>
   );
 }
