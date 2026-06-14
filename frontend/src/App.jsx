@@ -21,10 +21,20 @@ function canAccess(rol, path) {
   return PAGE_ACCESS[rol]?.includes(path) ?? false;
 }
 
+function defaultRoute(rol) {
+  const pages = PAGE_ACCESS[rol];
+  return pages?.[0] || '/';
+}
+
+function RoleRedirect() {
+  const { user } = useAuth();
+  return <Navigate to={user ? defaultRoute(user.rol) : '/login'} replace />;
+}
+
 function PrivateRoute({ children, path }) {
   const { user } = useAuth();
   if (!user) return <Navigate to="/login" replace />;
-  if (!canAccess(user.rol, path)) return <Navigate to="/" replace />;
+  if (!canAccess(user.rol, path)) return <Navigate to={defaultRoute(user.rol)} replace />;
   return children;
 }
 
@@ -39,8 +49,8 @@ function LoginPage() {
     setError('');
     try {
       const form = new FormData(e.target);
-      await login(form.get('email'), form.get('password'));
-      window.location.href = '/';
+      const data = await login(form.get('email'), form.get('password'));
+      window.location.href = defaultRoute(data.user.rol);
     } catch (err) {
       setError(err.response?.data?.error || 'Error al iniciar sesión');
     } finally {
@@ -171,7 +181,7 @@ export default function App() {
           <Route path="/ministerios" element={<PrivateRoute path="/ministerios"><Layout><Ministerios /></Layout></PrivateRoute>} />
           <Route path="/pastoral" element={<PrivateRoute path="/pastoral"><Layout><Pastoral /></Layout></PrivateRoute>} />
           <Route path="/usuarios" element={<PrivateRoute path="/usuarios"><Layout><Users /></Layout></PrivateRoute>} />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<RoleRedirect />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
