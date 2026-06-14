@@ -24,7 +24,7 @@ router.get('/services', async (req, res, next) => {
   } catch (error) { next(error); }
 });
 
-router.post('/services', authorize('administrador', 'pastor', 'secretaria'), async (req, res, next) => {
+router.post('/services', authorize('administrador', 'pastor', 'secretaria', 'ujier'), async (req, res, next) => {
   try {
     const { tipo, fecha, hora, titulo, predicador, notas } = req.body;
     const id = crypto.randomUUID();
@@ -46,7 +46,7 @@ router.get('/services/:id', async (req, res, next) => {
   } catch (error) { next(error); }
 });
 
-router.post('/services/:id/register', authorize('administrador', 'pastor', 'secretaria', 'lider'), async (req, res, next) => {
+router.post('/services/:id/register', authorize('administrador', 'pastor', 'secretaria', 'lider', 'ujier'), async (req, res, next) => {
   try {
     const { asistencias } = req.body;
     if (!Array.isArray(asistencias)) return res.status(400).json({ error: 'asistencias debe ser un array' });

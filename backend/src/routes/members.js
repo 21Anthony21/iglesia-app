@@ -30,7 +30,7 @@ router.get('/:id', async (req, res, next) => {
   } catch (error) { next(error); }
 });
 
-router.post('/', authorize('administrador', 'pastor', 'secretaria'), async (req, res, next) => {
+router.post('/', authorize('administrador', 'pastor', 'secretaria', 'ujier'), async (req, res, next) => {
   try {
     const { nombre, apellido, cedula, pasaporte, fecha_nacimiento, direccion, telefono, telefono_alternativo, email, estado_civil, conyuge_id, ocupacion, fecha_conversion, fecha_membresia, estado, notas } = req.body;
     if (!nombre || !apellido) return res.status(400).json({ error: 'Nombre y apellido son requeridos' });
@@ -45,7 +45,7 @@ router.post('/', authorize('administrador', 'pastor', 'secretaria'), async (req,
   } catch (error) { next(error); }
 });
 
-router.put('/:id', authorize('administrador', 'pastor', 'secretaria'), async (req, res, next) => {
+router.put('/:id', authorize('administrador', 'pastor', 'secretaria', 'ujier'), async (req, res, next) => {
   try {
     const existing = await query('SELECT * FROM miembros WHERE id = ?', [req.params.id]);
     if (existing.rows.length === 0) return res.status(404).json({ error: 'Miembro no encontrado' });

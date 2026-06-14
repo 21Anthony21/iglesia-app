@@ -26,7 +26,7 @@ export default function Attendance() {
   const [attendanceMap, setAttendanceMap] = useState({});
   const [saving, setSaving] = useState(false);
   const { hasRole } = useAuth();
-  const canEdit = hasRole('administrador', 'pastor', 'secretaria', 'lider');
+  const canEdit = hasRole('administrador', 'pastor', 'secretaria', 'lider', 'ujier');
 
   const loadData = () => {
     api.get('/attendance/services', { params: { limit: 20 } }).then(({ data }) => setServices(data.data)).catch(console.error);
