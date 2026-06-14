@@ -243,6 +243,15 @@ export function generateMonthlyReportPDF(data) {
       const pw = doc.page.width - 60;
       const lx = 30;
 
+      function ensureSpace(y, needed, bottomMargin) {
+        bottomMargin = bottomMargin || 60;
+        if (y + needed > doc.page.height - bottomMargin) {
+          doc.addPage();
+          return 40;
+        }
+        return y;
+      }
+
       // === HEADER ===
       doc.fontSize(10).font('Helvetica-Bold').fillColor('#1e3a5f').text('IGLESIA INTERNACIONAL DEL EVANGELIO CUADRANGULAR', { align: 'center' });
       doc.fontSize(7).font('Helvetica').fillColor('#333').text('Apartado 1772, Panamá 1, Panamá — Teléfono 263-6074', { align: 'center' });
@@ -307,14 +316,14 @@ export function generateMonthlyReportPDF(data) {
         [8, 'Mes Reportado', data.mes || ''],
         [9, 'Año Reportado', data.anio || ''],
       ];
-      fields1.forEach(([n, l, v]) => { yPos = fieldRow(n, l, v, lx, yPos, pw); });
+      fields1.forEach(([n, l, v]) => { yPos = ensureSpace(yPos, 13); yPos = fieldRow(n, l, v, lx, yPos, pw); });
 
       // === SECTION II: ESTADÍSTICA FIJA (10-12) ===
       yPos = sectionTitle('SECCIÓN II — ESTADÍSTICA FIJA', lx, yPos, pw);
       [[10, 'Número de Miembros Registrados', data.miembros_registrados],
        [11, 'Número de Puntos de Predicación', data.puntos_predicacion],
        [12, 'Reuniones No destinadas a ser Iglesias', data.reuniones_no_iglesia],
-      ].forEach(([n, l, v]) => { yPos = fieldRow(n, l, v, lx, yPos, pw); });
+      ].forEach(([n, l, v]) => { yPos = ensureSpace(yPos, 13); yPos = fieldRow(n, l, v, lx, yPos, pw); });
 
       // === SECTION III: MIGRACIÓN (13-18) ===
       yPos = sectionTitle('SECCIÓN III — MIGRACIÓN', lx, yPos, pw);
@@ -324,7 +333,7 @@ export function generateMonthlyReportPDF(data) {
        [16, 'Idos a Otras Iglesias Evangélicas', data.idos_evangelica],
        [17, 'Idos al Mundo o se desconoce el paradero', data.idos_mundo],
        [18, 'Defunciones de Creyentes', data.defunciones],
-      ].forEach(([n, l, v]) => { yPos = fieldRow(n, l, v, lx, yPos, pw); });
+      ].forEach(([n, l, v]) => { yPos = ensureSpace(yPos, 13); yPos = fieldRow(n, l, v, lx, yPos, pw); });
 
       // === SECTION IV: PROMEDIO DE ASISTENCIA (19-22) ===
       yPos = sectionTitle('SECCIÓN IV — PROMEDIO DE ASISTENCIA', lx, yPos, pw);
@@ -332,7 +341,7 @@ export function generateMonthlyReportPDF(data) {
        [20, 'Asistencia a Cultos Dominicales', data.asistencia_dominical],
        [21, 'Asistencia a Escuela Dominical', data.asistencia_escuela],
        [22, 'Asistencia a Ptos. de Predicación', data.asistencia_puntos],
-      ].forEach(([n, l, v]) => { yPos = fieldRow(n, l, v, lx, yPos, pw); });
+      ].forEach(([n, l, v]) => { yPos = ensureSpace(yPos, 13); yPos = fieldRow(n, l, v, lx, yPos, pw); });
 
       // === SECTION V: RESULTADOS ESPIRITUALES (23-29) ===
       yPos = sectionTitle('SECCIÓN V — RESULTADOS ESPIRITUALES', lx, yPos, pw);
@@ -342,7 +351,7 @@ export function generateMonthlyReportPDF(data) {
        [26, 'Sanidades (Estimadas)', data.sanidades],
        [27, 'Liberaciones', data.liberaciones],
        [28, 'Niños Dedicados', data.ninos_dedicados],
-      ].forEach(([n, l, v]) => { yPos = fieldRow(n, l, v, lx, yPos, pw); });
+      ].forEach(([n, l, v]) => { yPos = ensureSpace(yPos, 13); yPos = fieldRow(n, l, v, lx, yPos, pw); });
 
       const obsY = yPos;
       doc.rect(lx, obsY, pw, 32).stroke();
@@ -379,13 +388,13 @@ export function generateMonthlyReportPDF(data) {
         [44, 'Donaciones', data.donaciones],
         [45, 'Otras Ofrendas u Ofrendas', data.otras_ofrendas],
       ];
-      ingresos.forEach(([n, l, v]) => { colY = fieldRow(n, l, v, col1X, colY, colW); });
-      colY = fieldRow(46, 'TOTAL DE INGRESOS', data.total_ingresos, col1X, colY, colW, true);
+      ingresos.forEach(([n, l, v]) => { colY = ensureSpace(colY, 13); colY = fieldRow(n, l, v, col1X, colY, colW); });
+      colY = ensureSpace(colY, 16); colY = fieldRow(46, 'TOTAL DE INGRESOS', data.total_ingresos, col1X, colY, colW, true);
 
       // RIGHT: EGRESOS (47-63)
       let col2Y = finTop;
       if (yPos > finTop) { col2Y = finTop; }
-      col2Y = sectionLabel('EGRESOS', col2X, col2Y, colW);
+      col2Y = ensureSpace(col2Y, 13); col2Y = sectionLabel('EGRESOS', col2X, col2Y, colW);
       const egresos = [
         [47, 'Pago total de este informe', data.pago_total],
         [48, 'Ayuda al Pastor', data.ayuda_pastor],
@@ -404,22 +413,21 @@ export function generateMonthlyReportPDF(data) {
         [61, 'Luz / Agua / Teléfono / Internet', data.luz_agua_tel],
         [62, 'Otros Gastos Adm/Compras Bienes', data.otros_gastos_adm],
       ];
-      egresos.forEach(([n, l, v]) => { col2Y = fieldRow(n, l, v, col2X, col2Y, colW); });
-      col2Y = fieldRow(63, 'TOTAL DE EGRESOS', data.total_egresos, col2X, col2Y, colW, true);
+      egresos.forEach(([n, l, v]) => { col2Y = ensureSpace(col2Y, 13); col2Y = fieldRow(n, l, v, col2X, col2Y, colW); });
+      col2Y = ensureSpace(col2Y, 16); col2Y = fieldRow(63, 'TOTAL DE EGRESOS', data.total_egresos, col2X, col2Y, colW, true);
 
       // SALDOS (64-67)
-      const saldosY = Math.max(colY, col2Y) + 2;
+      yPos = ensureSpace(Math.max(colY, col2Y) + 2, 70);
+      const saldosY = yPos;
       let salY = saldosY;
       salY = sectionLabel('SALDOS', col1X, salY, colW);
       [[64, 'Saldo Anterior', data.saldo_anterior],
        [65, 'Resultado del Mes', data.resultado_mes],
-      ].forEach(([n, l, v]) => { salY = fieldRow(n, l, v, col1X, salY, colW); });
-      salY = fieldRow(66, 'Nuevo Saldo en Caja/Banco', data.nuevo_saldo, col1X, salY, colW, true);
-      salY = fieldRow(67, 'Otros Detalles', undefined, col1X, salY, colW);
+      ].forEach(([n, l, v]) => { salY = ensureSpace(salY, 13); salY = fieldRow(n, l, v, col1X, salY, colW); });
+      salY = ensureSpace(salY, 16); salY = fieldRow(66, 'Nuevo Saldo en Caja/Banco', data.nuevo_saldo, col1X, salY, colW, true);
+      salY = ensureSpace(salY, 13); salY = fieldRow(67, 'Otros Detalles', undefined, col1X, salY, colW);
 
       yPos = Math.max(salY, col2Y);
-
-      if (yPos > doc.page.height - 200) { doc.addPage(); yPos = 40; }
 
       // === SECTION VII: APORTES A LA DENOMINACIÓN (68-101) ===
       yPos = sectionTitle('SECCIÓN VII — APORTES A LA DENOMINACIÓN', lx, yPos, pw);
@@ -450,19 +458,19 @@ export function generateMonthlyReportPDF(data) {
       let a1Y = yPos, a2Y = yPos;
 
       // LEFT COLUMN APORTES
-      a1Y = aporteRow(68, 'Diezmo de Diezmos y Ofrendas', data.diezmo_diezmos, data.ofrenda_diezmos, col1X, a1Y, colW);
-      a1Y = aporteRow(69, 'Diezmos Ministeriales del Pastor', data.diezmos_min_pastor, undefined, col1X, a1Y, colW);
-      a1Y = aporteRow(70, 'Diezmos Pastorales Personales', data.diezmos_past_per, undefined, col1X, a1Y, colW);
-      a1Y = aporteRow(71, 'Diezmos de Ministros con Cred.', data.diezmos_min_cred, undefined, col1X, a1Y, colW);
-      a1Y = aporteRow(72, 'Inversiones Nacionales', data.inversiones_nac, undefined, col1X, a1Y, colW);
-      a1Y = aporteRow(73, 'Aporte a Campamentos (2%)', data.aporte_campamentos, undefined, col1X, a1Y, colW);
-      a1Y = sectionLabel('DIRECCIÓN NACIONAL DE MISIONES:', col1X, a1Y, colW);
-      a1Y = aporteRow(74, 'Ofrenda Misionera', undefined, data.ofrenda_misionera_ap, col1X, a1Y, colW);
-      a1Y = aporteRow(75, 'Ofrenda Mi aporte Misionero', undefined, data.aporte_misionero_ap, col1X, a1Y, colW);
-      a1Y = aporteRow(76, 'Otros Aportes Misioneros', undefined, data.otros_ap_misioneros, col1X, a1Y, colW);
+      a1Y = ensureSpace(a1Y, 13); a1Y = aporteRow(68, 'Diezmo de Diezmos y Ofrendas', data.diezmo_diezmos, data.ofrenda_diezmos, col1X, a1Y, colW);
+      a1Y = ensureSpace(a1Y, 13); a1Y = aporteRow(69, 'Diezmos Ministeriales del Pastor', data.diezmos_min_pastor, undefined, col1X, a1Y, colW);
+      a1Y = ensureSpace(a1Y, 13); a1Y = aporteRow(70, 'Diezmos Pastorales Personales', data.diezmos_past_per, undefined, col1X, a1Y, colW);
+      a1Y = ensureSpace(a1Y, 13); a1Y = aporteRow(71, 'Diezmos de Ministros con Cred.', data.diezmos_min_cred, undefined, col1X, a1Y, colW);
+      a1Y = ensureSpace(a1Y, 13); a1Y = aporteRow(72, 'Inversiones Nacionales', data.inversiones_nac, undefined, col1X, a1Y, colW);
+      a1Y = ensureSpace(a1Y, 13); a1Y = aporteRow(73, 'Aporte a Campamentos (2%)', data.aporte_campamentos, undefined, col1X, a1Y, colW);
+      a1Y = ensureSpace(a1Y, 13); a1Y = sectionLabel('DIRECCIÓN NACIONAL DE MISIONES:', col1X, a1Y, colW);
+      a1Y = ensureSpace(a1Y, 13); a1Y = aporteRow(74, 'Ofrenda Misionera', undefined, data.ofrenda_misionera_ap, col1X, a1Y, colW);
+      a1Y = ensureSpace(a1Y, 13); a1Y = aporteRow(75, 'Ofrenda Mi aporte Misionero', undefined, data.aporte_misionero_ap, col1X, a1Y, colW);
+      a1Y = ensureSpace(a1Y, 13); a1Y = aporteRow(76, 'Otros Aportes Misioneros', undefined, data.otros_ap_misioneros, col1X, a1Y, colW);
 
       // RIGHT COLUMN: MINISTERIOS (77-101)
-      a2Y = sectionLabel('MINISTERIOS (77-101):', col2X, a2Y, colW);
+      a2Y = ensureSpace(a2Y, 13); a2Y = sectionLabel('MINISTERIOS (77-101):', col2X, a2Y, colW);
       const minRows = [
         [77, 'a. Escuela Dominical', data.ap_escuela_diezmo, data.ap_escuela_ofrenda],
         [78, 'Otros diezmos a la Escuela Dominical', data.ap_otros_escuela, undefined],
@@ -489,14 +497,13 @@ export function generateMonthlyReportPDF(data) {
         [99, 'S.S. Patrono retenido en Provincia', data.ss_patrono_ret, undefined],
         [100, 'Otros Pagos', data.otros_pagos, undefined],
       ];
-      minRows.forEach(([n, l, d, o]) => { a2Y = aporteRow(n, l, d, o, col2X, a2Y, colW); });
-      a2Y = aporteRow(101, 'TOTAL DE ESTE PAGO', data.total_pago, undefined, col2X, a2Y, colW, true);
+      minRows.forEach(([n, l, d, o]) => { a2Y = ensureSpace(a2Y, 13); a2Y = aporteRow(n, l, d, o, col2X, a2Y, colW); });
+      a2Y = ensureSpace(a2Y, 16); a2Y = aporteRow(101, 'TOTAL DE ESTE PAGO', data.total_pago, undefined, col2X, a2Y, colW, true);
 
       yPos = Math.max(a1Y, a2Y) + 5;
 
-      if (yPos > doc.page.height - 80) { doc.addPage(); yPos = 40; }
-
       // === SECTION VIII: VALIDACIÓN (102-105) ===
+      yPos = ensureSpace(yPos, 120);
       yPos = sectionTitle('SECCIÓN VIII — VALIDACIÓN DEL INFORME MENSUAL', lx, yPos, pw);
 
       const sigH = 28;
