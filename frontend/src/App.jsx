@@ -7,6 +7,7 @@ import Attendance from './pages/Attendance';
 import Inventory from './pages/Inventory';
 import Pastoral from './pages/Pastoral';
 import Events from './pages/Events';
+import Ministerios from './pages/Ministerios';
 
 function PrivateRoute({ children }) {
   const { user } = useAuth();
@@ -151,6 +152,7 @@ export default function App() {
           <Route path="/inventario" element={<PrivateRoute><Layout><Inventory /></Layout></PrivateRoute>} />
           <Route path="/comunicacion" element={<PrivateRoute><Layout><Communication /></Layout></PrivateRoute>} />
           <Route path="/eventos" element={<PrivateRoute><Layout><Events /></Layout></PrivateRoute>} />
+          <Route path="/ministerios" element={<PrivateRoute><Layout><Ministerios /></Layout></PrivateRoute>} />
           <Route path="/pastoral" element={<PrivateRoute><Layout><Pastoral /></Layout></PrivateRoute>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
