@@ -8,6 +8,7 @@ import financesRouter from './routes/finances.js';
 import communicationRouter from './routes/communication.js';
 import attendanceRouter from './routes/attendance.js';
 import membersRouter from './routes/members.js';
+import ministeriosRouter from './routes/ministerios.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -23,6 +24,7 @@ app.use('/api/finances', financesRouter);
 app.use('/api/communication', communicationRouter);
 app.use('/api/attendance', attendanceRouter);
 app.use('/api/members', membersRouter);
+app.use('/api/ministerios', ministeriosRouter);
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
 
