@@ -8,10 +8,24 @@ import Inventory from './pages/Inventory';
 import Pastoral from './pages/Pastoral';
 import Events from './pages/Events';
 import Ministerios from './pages/Ministerios';
+import Users from './pages/Users';
 
-function PrivateRoute({ children }) {
+const PAGE_ACCESS = {
+  administrador: ['/', '/finanzas', '/asistencia', '/inventario', '/comunicacion', '/ministerios', '/eventos', '/pastoral', '/usuarios'],
+  pastor: ['/', '/finanzas', '/asistencia', '/inventario', '/comunicacion', '/ministerios', '/eventos', '/pastoral'],
+  secretaria: ['/', '/finanzas', '/asistencia', '/inventario', '/comunicacion', '/ministerios', '/eventos', '/pastoral'],
+  ujier: ['/asistencia', '/inventario', '/comunicacion', '/ministerios', '/eventos'],
+};
+
+function canAccess(rol, path) {
+  return PAGE_ACCESS[rol]?.includes(path) ?? false;
+}
+
+function PrivateRoute({ children, path }) {
   const { user } = useAuth();
-  return user ? children : <Navigate to="/login" replace />;
+  if (!user) return <Navigate to="/login" replace />;
+  if (!canAccess(user.rol, path)) return <Navigate to="/" replace />;
+  return children;
 }
 
 function LoginPage() {
@@ -73,8 +87,8 @@ function Layout({ children }) {
 
 function Sidebar({ open, onClose }) {
   const { user, logout } = useAuth();
-  const links = [
-    { to: '/', label: 'Dashboard', icon: '📊', tab: 'resumen' },
+  const allLinks = [
+    { to: '/', label: 'Dashboard', icon: '📊' },
     { to: '/finanzas', label: 'Finanzas', icon: '💰' },
     { to: '/asistencia', label: 'Asistencia', icon: '📋' },
     { to: '/inventario', label: 'Inventario', icon: '📦' },
@@ -82,18 +96,20 @@ function Sidebar({ open, onClose }) {
     { to: '/ministerios', label: 'Ministerios', icon: '👥' },
     { to: '/eventos', label: 'Eventos', icon: '📅' },
     { to: '/pastoral', label: 'Pastoral', icon: '❤️' },
+    { to: '/usuarios', label: 'Usuarios', icon: '🔐' },
   ];
+  const links = allLinks.filter(l => canAccess(user?.rol, l.to));
   return (
     <>
       <div className={`fixed inset-0 bg-black/50 z-40 lg:hidden ${open ? 'block' : 'hidden'}`} onClick={onClose} />
       <aside className={`fixed top-0 left-0 z-50 h-full w-64 bg-white dark:bg-gray-800 shadow-lg transform transition-transform lg:translate-x-0 ${open ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-4 border-b dark:border-gray-700">
           <h2 className="font-bold text-lg dark:text-white">Iglesia Puerta Del Cielo</h2>
-          <p className="text-xs text-gray-500">{user?.nombre || user?.email}</p>
+          <p className="text-xs text-gray-500">{user?.nombre || user?.email} <span className={`badge-${user?.rol === 'administrador' ? 'danger' : user?.rol === 'pastor' ? 'purple' : 'info'}`}>{user?.rol}</span></p>
         </div>
         <nav className="p-2 space-y-1">
           {links.map(l => (
-            <a key={l.to} href={l.to} className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm hover:bg-primary-50 dark:hover:bg-gray-700 dark:text-gray-300">
+            <a key={l.to} href={l.to} onClick={onClose} className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm hover:bg-primary-50 dark:hover:bg-gray-700 dark:text-gray-300">
               <span>{l.icon}</span>
               <span>{l.label}</span>
             </a>
@@ -146,14 +162,15 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/" element={<PrivateRoute><Layout><Dashboard /></Layout></PrivateRoute>} />
-          <Route path="/finanzas" element={<PrivateRoute><Layout><Finances /></Layout></PrivateRoute>} />
-          <Route path="/asistencia" element={<PrivateRoute><Layout><Attendance /></Layout></PrivateRoute>} />
-          <Route path="/inventario" element={<PrivateRoute><Layout><Inventory /></Layout></PrivateRoute>} />
-          <Route path="/comunicacion" element={<PrivateRoute><Layout><Communication /></Layout></PrivateRoute>} />
-          <Route path="/eventos" element={<PrivateRoute><Layout><Events /></Layout></PrivateRoute>} />
-          <Route path="/ministerios" element={<PrivateRoute><Layout><Ministerios /></Layout></PrivateRoute>} />
-          <Route path="/pastoral" element={<PrivateRoute><Layout><Pastoral /></Layout></PrivateRoute>} />
+          <Route path="/" element={<PrivateRoute path="/"><Layout><Dashboard /></Layout></PrivateRoute>} />
+          <Route path="/finanzas" element={<PrivateRoute path="/finanzas"><Layout><Finances /></Layout></PrivateRoute>} />
+          <Route path="/asistencia" element={<PrivateRoute path="/asistencia"><Layout><Attendance /></Layout></PrivateRoute>} />
+          <Route path="/inventario" element={<PrivateRoute path="/inventario"><Layout><Inventory /></Layout></PrivateRoute>} />
+          <Route path="/comunicacion" element={<PrivateRoute path="/comunicacion"><Layout><Communication /></Layout></PrivateRoute>} />
+          <Route path="/eventos" element={<PrivateRoute path="/eventos"><Layout><Events /></Layout></PrivateRoute>} />
+          <Route path="/ministerios" element={<PrivateRoute path="/ministerios"><Layout><Ministerios /></Layout></PrivateRoute>} />
+          <Route path="/pastoral" element={<PrivateRoute path="/pastoral"><Layout><Pastoral /></Layout></PrivateRoute>} />
+          <Route path="/usuarios" element={<PrivateRoute path="/usuarios"><Layout><Users /></Layout></PrivateRoute>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>

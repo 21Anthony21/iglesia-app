@@ -447,7 +447,7 @@ CREATE TABLE usuarios (
   id TEXT PRIMARY KEY,
   email TEXT UNIQUE NOT NULL,
   password_hash TEXT NOT NULL,
-  rol TEXT NOT NULL DEFAULT 'miembro' CHECK(rol IN ('administrador','pastor','lider','secretaria','miembro')),
+  rol TEXT NOT NULL DEFAULT 'miembro' CHECK(rol IN ('administrador','pastor','lider','secretaria','miembro','ujier')),
   miembro_id TEXT UNIQUE REFERENCES miembros(id) ON DELETE SET NULL,
   activo INTEGER DEFAULT 1,
   ultimo_acceso TEXT,

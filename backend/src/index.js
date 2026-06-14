@@ -11,6 +11,7 @@ import membersRouter from './routes/members.js';
 import ministeriosRouter from './routes/ministerios.js';
 import eventosRouter from './routes/eventos.js';
 import pastoralRouter from './routes/pastoral.js';
+import usersRouter from './routes/users.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -29,6 +30,7 @@ app.use('/api/members', membersRouter);
 app.use('/api/ministerios', ministeriosRouter);
 app.use('/api/eventos', eventosRouter);
 app.use('/api/pastoral', pastoralRouter);
+app.use('/api/users', usersRouter);
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
 
